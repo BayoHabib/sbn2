@@ -84,7 +84,7 @@ class EEGPreprocessor:
             raise ValueError("No preprocessed data to save. Please preprocess the data first.")
 
         logger.info(f"Saving processed EEG data to {self.output_file}")
-        filename = os.path.basename(self.raw_file_path).split('.')[0]
+        filename = f"{os.path.basename(self.raw_file_path).split('.')[0]}.fif"
         file_path = os.path.join(self.output_dir, filename)
         self.__preprocessed_signal.save(file_path, overwrite=True)
 
