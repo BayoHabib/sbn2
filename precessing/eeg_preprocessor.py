@@ -70,34 +70,6 @@ class EEGPreprocessor:
         #logger.info(f"Saving processed EEG data to {self.output_file}")
         #self.raw.save(self.output_file, overwrite=True)
 
-    def get_bad_channels(self):
-        """
-        Get the list of bad channels.
-        """
-        pass
-        #logger.info("Getting bad channels")
-        #return self.raw.info['bads']
-
-    def set_bad_channels(self, bad_channels):
-        """
-        Set the list of bad channels.
-
-        Parameters:
-            bad_channels (list): List of bad channels.
-        """
-        pass
-        #logger.info(f"Setting bad channels to {bad_channels}")
-        #self.raw.info['bads'] = bad_channels
-
-    def remove_artifacts(self):
-        """
-        Remove artifacts from the EEG data.
-        """
-        pass
-        #logger.info("Removing artifacts")
-        # Implement artifact removal here
-        #self.__preprocessed_signal = None # receive the processed signal after removing artifacts
-
     def set_channel_names(self, channel_mapping):
         """
         Map the names of the channels in the raw dataset to new names.
@@ -143,24 +115,7 @@ class EEGPreprocessor:
         except Exception as e:
             print(e)
             raise ValueError('The provided type mapping does not match the data')
-        
-                             
-                             
-
-    def get_artifacts(self):
-        """
-        Get the list of artifacts.
-        """
-        pass
-        #logger.info("Getting artifacts")
-        # Implement artifact detection here
+                                  
     def get_raw(self):
         return self.__raw
     
-    #logger.info("Renaming channels according to standard...")
-    #raw.rename_channels(mapping=_config.new_channels_names)
-    #logger.info("Setting channel types...")
-    #raw.set_channel_types(mapping=_config.ch_types)
-    #logger.info("Setting montage to standard 10-20 system...")
-    #montage = mne.channels.make_standard_montage('standard_1020')
-    #raw.set_montage(montage)
