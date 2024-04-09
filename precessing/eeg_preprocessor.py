@@ -13,7 +13,7 @@ logger.setLevel(logging.INFO)
 formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
 
 # Create file handler and set level and formatter
-file_handler = logging.FileHandler('my_log_file.log')
+file_handler = logging.FileHandler('preprocessor_log_file.log')
 file_handler.setLevel(logging.INFO)
 file_handler.setFormatter(formatter)
 
