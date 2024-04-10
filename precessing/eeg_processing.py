@@ -1,3 +1,5 @@
+from typing import List
+import mne
 import logging
 import numpy as np
 from mne.preprocessing import ICA
@@ -33,10 +35,10 @@ class EEGCleaner:
 
     Parameters:
     - raw_eeg_data (mne.io.Raw): The raw EEG data to be cleaned.
-    - l_freq (float): The lower frequency boundary for the band-pass filter in Hz.
-    - h_freq (float): The upper frequency boundary for the band-pass filter in Hz.
-    - artifact_labels (list): A list of strings representing the labels of ICA components
-      considered as artifacts (e.g., 'eye', 'muscle').
+    - l_freq (float): The lower frequency boundary for the band-pass filter in Hz. Default: 0.1.
+    - h_freq (float): The upper frequency boundary for the band-pass filter in Hz. Default: 40.0.
+    - exclusion_threshold (float): The threshold for excluding ICA components based on artifact probability. Default: 0.8.
+    - ransac (bool): Whether to use RANSAC for bad channel detection and interpolation. Default: True.
 
     Usage:
     ```python
@@ -47,7 +49,7 @@ class EEGCleaner:
     ```
     """
 
-    def __init__(self, raw_eeg_data,exclusion_threshold=0.8, l_freq=0.1, h_freq=40.0,ransac=True):
+    def __init__(self, raw_eeg_data: mne.io.Raw, l_freq: float = 0.1, h_freq: float = 40.0, exclusion_threshold: float = 0.8, ransac: bool = True) -> None:
         self.__processed_raw = raw_eeg_data.copy()
         self.l_freq = l_freq
         self.h_freq = h_freq
@@ -55,7 +57,7 @@ class EEGCleaner:
         self.ransac = ransac
         self.__noisy_channels = None
 
-    def fit(self):
+    def fit(self) -> None:
         """
         Executes the artifact removal workflow on the EEG data. This method sequentially
         applies band-pass filtering, bad channel detection and interpolation, and ICA for
@@ -68,8 +70,7 @@ class EEGCleaner:
         self.apply_ica()
         self.__processed_raw.filter(l_freq=self.l_freq, h_freq=self.h_freq, fir_design='firwin')
 
-    
-    def prep_pipeline(self):
+    def prep_pipeline(self) -> None:
         # Setup for PyPREP - Ensure the data is loaded and filtered
         prep_params = {
             'ref_chs': 'eeg',
@@ -87,7 +88,7 @@ class EEGCleaner:
             logger.info(f"List of still noisy channels: {prep.still_noisy_channels}")
             self.__noisy_channels = prep.still_noisy_channels
 
-    def apply_ica(self):
+    def apply_ica(self) -> None:
         """
         Applies Independent Component Analysis (ICA) to the filtered EEG data for artifact
         correction. Components classified as artifacts based on the provided labels are
@@ -126,19 +127,38 @@ class EEGCleaner:
             logger.info("No ICA components exceeded the artifact probability threshold for exclusion.")  
         del tmp_raw  # Explicitly delete the temporary raw object to free up memory
 
-    def get_clean_data(self):
+    def get_clean_data(self) -> mne.io.Raw:
         """
         Retrieves the cleaned EEG data after preprocessing.
 
         Returns:
         - mne.io.Raw: The cleaned raw EEG data.
         """
-        return self.__processed_raw
-    def get_noisy_channels(self):
+        if self.__processed_raw is not None:
+            return self.__processed_raw.copy()
+        else:
+            return None
+
+    def get_noisy_channels(self) -> List[str]:
         """
-        
+        Retrieves the list of channels that were identified as noisy after preprocessing.
+
+        Returns
+        -------
+        list of str
+            List of channel names identified as noisy.
         """
-        return self.__noisy_channels
+        return self.__noisy_channels.copy()
+
+    def __repr__(self) -> str:
+        return f"EEGCleaner(raw_eeg_data={self.__processed_raw}, exclusion_threshold={self.exclusion_threshold}, l_freq={self.l_freq}, h_freq={self.h_freq}, ransac={self.ransac})"
+
+    def __str__(self) -> str:
+        return f"EEGCleaner(l_freq={self.l_freq}, h_freq={self.h_freq}, exclusion_threshold={self.exclusion_threshold}, ransac={self.ransac})"
+
+    def fit(self) -> 'EEGCleaner':
+        ...
+        return self
 
 
 # One should be discarded but keeping both for now
@@ -248,10 +268,11 @@ class EEGCleanerV2:
     def get_noisy_channels(self):
         """
         Retrieves the list of channels that were identified as noisy after preprocessing.
-
+    
         Returns
         -------
         list of str
             List of channel names identified as noisy.
         """
         return self.__noisy_channels
+
