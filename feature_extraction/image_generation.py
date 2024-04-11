@@ -1,3 +1,4 @@
+import numpy as np
 from sklearn.preprocessing import scale
 from scipy.interpolate import griddata
 def augment_EEG(features, std_mult, pca=False, n_components=2):
